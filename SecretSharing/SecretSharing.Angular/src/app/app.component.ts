@@ -1,23 +1,24 @@
-import {Component, OnInit} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
-import {AsyncPipe, JsonPipe} from "@angular/common";
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
+import {CryptoService} from "./crypto.service";
+import {AsyncPipe} from "@angular/common";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AsyncPipe, JsonPipe],
+  imports: [RouterOutlet, AsyncPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'SecretSharing';
-  todos: Observable<any> | null = null;
-  constructor(private httpClient: HttpClient) {
+  encrypted: string = '';
+  constructor(private cryptoService: CryptoService) {
   }
 
-  ngOnInit() {
-    this.todos = this.httpClient.get('/api/todos')
+  encryptString(): void {
+    this.cryptoService.encrypt("test1234").then((x: Uint8Array) =>
+      this.cryptoService.decrypt(x)
+        .then(y => this.encrypted = y));
   }
 }
