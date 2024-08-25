@@ -2,17 +2,17 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var hashiVaultContainer = builder.AddContainer("secretsharing-vault", "hashicorp/vault", "latest")
-    .WithHttpEndpoint(env: "PORT", targetPort: 8200, name: "vault")
-    .WithExternalHttpEndpoints();
-
-var hashiVaultEndpoint = hashiVaultContainer.GetEndpoint("vault");
-
 var cache = builder.AddRedis("cache");
+
+var userDatabase = builder.AddPostgres("user")
+    .AddDatabase("userdb");
+
+var secretsDatabase = builder.AddPostgres("secrets")
+    .AddDatabase("secretsdb");
 
 var secretSharingApi = builder.AddProject<SecretSharing_API>("secretsharingapi")
     .WithReference(cache)
-    .WithReference(hashiVaultEndpoint)
+    .WithReference(userDatabase)
     .WithExternalHttpEndpoints();
 
 builder.AddNpmApp("angular", "../SecretSharing.Angular")
