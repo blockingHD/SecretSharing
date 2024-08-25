@@ -17,7 +17,7 @@ var secretSharingApi = builder.AddProject<SecretSharing_API>("secretsharingapi")
 
 builder.AddNpmApp("angular", "../SecretSharing.Angular")
     .WithReference(secretSharingApi)
-    .WithHttpEndpoint(env: "PORT")
+    .WithHttpEndpoint(env: "PORT", port: 4587)
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
 
