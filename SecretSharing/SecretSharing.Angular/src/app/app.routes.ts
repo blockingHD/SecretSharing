@@ -1,15 +1,15 @@
 import { Routes } from '@angular/router';
-import {MsalGuard} from "@azure/msal-angular";
+import {AuthGuard} from "@auth0/auth0-angular";
 
 export const routes: Routes = [
   {
     path: 'my-secrets',
-    canActivate: [MsalGuard],
+    canActivate: [AuthGuard],
     loadComponent: () => import('./my-secrets/my-secrets.component').then(m => m.MySecretsComponent)
   },
   {
     path: 'send-secret',
-    canActivate: [MsalGuard],
+    canActivate: [AuthGuard],
     loadComponent: () => import('./send-secret/send-secret.component').then(m => m.SendSecretComponent)
   },
   {
