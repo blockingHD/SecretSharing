@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace SecretSharing.API.models;
+namespace SecretSharing.User.API.models;
 
 public class User
 {
@@ -9,6 +9,8 @@ public class User
     public string UserId { get; set; }
     public byte[] PublicKey { get; set; }
     public byte[] PrivateKey { get; set; }
+    public byte[] Salt { get; set; }
+    public byte[] IV { get; set; }
 }
 
 [JsonSerializable(typeof(User[]))]

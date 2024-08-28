@@ -1,7 +1,11 @@
 <app-header class="header"/>
 <div class="main-container">
-  <app-page-selector />
-  <router-outlet />
+  @if ((isUserRegistered | async) === true) {
+    <app-page-selector/>
+    <router-outlet/>
+  } @else if ((isUserRegistered | async) === false) {
+    <app-registration />
+  }
 </div>
 <button (click)="encryptString()"></button>
 <p>{{ encrypted }}</p>

@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using SecretSharing.API;
-using SecretSharing.API.models;
-using User = SecretSharing.API.Endpoints.User;
+using SecretSharing.User.API;
+using SecretSharing.User.API.models;
+using User = SecretSharing.User.API.Endpoints.User;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 

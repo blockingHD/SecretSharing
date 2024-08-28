@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace SecretSharing.API.Endpoints;
+namespace SecretSharing.User.API.Endpoints;
 
 public static class User
 {
@@ -54,7 +54,9 @@ public static class User
                 {
                     UserId = userId,
                     PublicKey = Convert.FromBase64String(request.PublicKey),
-                    PrivateKey = Convert.FromBase64String(request.PrivateKey)
+                    PrivateKey = Convert.FromBase64String(request.PrivateKey),
+                    Salt = Convert.FromBase64String(request.salt),
+                    IV = Convert.FromBase64String(request.iv)
                 };
 
                 db.Users.Add(user);
@@ -66,4 +68,4 @@ public static class User
     }
 }
 
-public record UserKeysRequest(string PublicKey, string PrivateKey);
+public record UserKeysRequest(string PublicKey, string PrivateKey, string salt, string iv);

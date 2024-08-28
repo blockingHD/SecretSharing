@@ -10,7 +10,7 @@ var userDatabase = builder.AddPostgres("user")
 var secretsDatabase = builder.AddPostgres("secrets")
     .AddDatabase("secretsdb");
 
-var secretSharingApi = builder.AddProject<SecretSharing_API>("secretsharingapi")
+var secretSharingApi = builder.AddProject<SecretSharing_User_API>("userapi")
     .WithReference(cache)
     .WithReference(userDatabase)
     .WithExternalHttpEndpoints();

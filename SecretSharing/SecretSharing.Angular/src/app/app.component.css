@@ -8,10 +8,10 @@
 }
 
 .main-container app-page-selector {
-  margin-top: 47px;
   margin-bottom: 32px;
 }
 
 .header {
   width: 100%;
+  margin-bottom: 47px;
 }

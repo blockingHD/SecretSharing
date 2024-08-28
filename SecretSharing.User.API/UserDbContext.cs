@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using SecretSharing.API.models;
+using SecretSharing.User.API.models;
 
-namespace SecretSharing.API;
+namespace SecretSharing.User.API;
 
 public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(options)
 {
-    public DbSet<User> Users { get; set; }
+    public DbSet<models.User> Users { get; set; }
 }
