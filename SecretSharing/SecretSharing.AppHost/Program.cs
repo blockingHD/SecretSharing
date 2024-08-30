@@ -4,8 +4,8 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var cache = builder.AddRedis("cache");
 
-var userDatabase = builder.AddPostgres("user")
-    .AddDatabase("userdb");
+var userPostgres = builder.AddPostgres("userPostgres");
+var userDatabase = userPostgres.AddDatabase("userdb");
 
 var secretsDatabase = builder.AddPostgres("secrets")
     .AddDatabase("secretsdb");
@@ -13,6 +13,7 @@ var secretsDatabase = builder.AddPostgres("secrets")
 var secretSharingApi = builder.AddProject<SecretSharing_User_API>("userapi")
     .WithReference(cache)
     .WithReference(userDatabase)
+    .WithReference(userPostgres)
     .WithExternalHttpEndpoints();
 
 builder.AddNpmApp("angular", "../SecretSharing.Angular")

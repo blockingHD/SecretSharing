@@ -11,7 +11,7 @@ using SecretSharing.User.API;
 namespace SecretSharing.User.API.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20240825213738_Initial")]
+    [Migration("20240830083935_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -32,11 +32,19 @@ namespace SecretSharing.User.API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<byte[]>("IV")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
                     b.Property<byte[]>("PrivateKey")
                         .IsRequired()
                         .HasColumnType("bytea");
 
                     b.Property<byte[]>("PublicKey")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("Salt")
                         .IsRequired()
                         .HasColumnType("bytea");
 

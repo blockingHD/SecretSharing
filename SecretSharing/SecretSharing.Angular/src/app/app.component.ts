@@ -24,16 +24,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isUserRegistered = this.httpClient.get('/api/user')
+    this.isUserRegistered = this.httpClient.get('/api/user/keys')
       .pipe(
         map(() => true),
         catchError(() => of(false))
       );
-  }
-
-  encryptString(): void {
-    this.cryptoService.encrypt("test1234").then((x: Uint8Array) =>
-      this.cryptoService.decrypt(x)
-        .then(y => this.encrypted = y));
   }
 }

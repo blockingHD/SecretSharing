@@ -19,7 +19,9 @@ namespace SecretSharing.User.API.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<string>(type: "text", nullable: false),
                     PublicKey = table.Column<byte[]>(type: "bytea", nullable: false),
-                    PrivateKey = table.Column<byte[]>(type: "bytea", nullable: false)
+                    PrivateKey = table.Column<byte[]>(type: "bytea", nullable: false),
+                    Salt = table.Column<byte[]>(type: "bytea", nullable: false),
+                    IV = table.Column<byte[]>(type: "bytea", nullable: false)
                 },
                 constraints: table =>
                 {

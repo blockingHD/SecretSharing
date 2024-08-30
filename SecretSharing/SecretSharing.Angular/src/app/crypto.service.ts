@@ -116,8 +116,7 @@ export class CryptoService {
         keyMaterial.encryptedPrivateKey
       );
 
-      let dec = new TextDecoder();
-      return dec.decode(decrypted);
+      return decrypted;
     } catch (e) {
       throw new Error("Failed to decrypt.");
     }
@@ -136,4 +135,20 @@ class KeyMaterial {
     this.salt = salt;
     this.iv = iv;
   }
+
+  get json(): string {
+    return JSON.stringify({
+      publicKey: Array.from(this.publicKey),
+      encryptedPrivateKey: Array.from(this.encryptedPrivateKey),
+      salt: Array.from(this.salt),
+      iv: Array.from(this.iv)
+    });
+  }
+}
+
+interface KeyMaterialJSON {
+  publicKey: number[];
+  encryptedPrivateKey: number[];
+  salt: number[];
+  iv: number[];
 }

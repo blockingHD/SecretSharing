@@ -16,7 +16,7 @@ public static class User
             {
                 auth.RequireAssertion(
                     context => context.User.FindFirst(
-                        c => c is { Type: "scope", Value: "read:user" }) != null);
+                        c => c is { Type: "scope" } && c.Value.Contains("read:user")) != null);
 
                 auth.RequireAuthenticatedUser();
             });

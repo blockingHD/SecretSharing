@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using SecretSharing.User.API;
 using SecretSharing.User.API.models;
 using User = SecretSharing.User.API.Endpoints.User;
@@ -27,15 +29,32 @@ builder.AddNpgsqlDbContext<UserDbContext>("userdb");
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-    await context.Database.EnsureCreatedAsync();
-}
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 User.RegisterUserApi(app);
+
+using var scope = app.Services.CreateScope();
+
+bool canConnect;
+var tries = 10;
+var connection = new NpgsqlConnection(app.Configuration.GetConnectionString("userPostgres"));
+do
+{
+    try
+    {
+        await connection.OpenAsync();
+        await new NpgsqlCommand("SELECT 1", connection).ExecuteNonQueryAsync();
+        canConnect = true;
+    }
+    catch
+    {
+        canConnect = false;
+        await Task.Delay(5000);
+    }
+} while (!canConnect && tries-- > 0);
+
+var context = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+await context.Database.MigrateAsync();
 
 app.Run();

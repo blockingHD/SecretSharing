@@ -1,16 +1,17 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {MatFormField, MatLabel} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
 import {CryptoService} from "../crypto.service";
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-registration',
   standalone: true,
   imports: [
-    MatFormField,
-    MatInput,
-    MatLabel
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule
   ],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.css',
@@ -18,12 +19,33 @@ import {CryptoService} from "../crypto.service";
     class: 'w-100'
   }
 })
-export class RegistrationComponent {
-  constructor(private cryptoService: CryptoService, private httpClient: HttpClient) {
+export class RegistrationComponent implements OnInit {
+  public passwordForm: FormGroup<{
+    password: FormControl<string | null>
+  }> | undefined;
+
+  constructor(private cryptoService: CryptoService, private formBuilder: FormBuilder, private httpClient: HttpClient) {
   }
 
-  handleSubmission(password: string): void {
-    this.cryptoService.encrypt(password)
-      .then(x => console.log(x));
+  ngOnInit(): void {
+    this.passwordForm = this.formBuilder.group({
+      password: ['', Validators.required]
+    });
   }
+
+  handleSubmission(): void {
+    if (!this.passwordForm?.valid) {
+      return;
+    }
+
+    const password = this.passwordForm.value.password!;
+
+    this.cryptoService.encrypt(password)
+      .then(async x => {
+        this.httpClient.post('/api/user/keys', {
+          password: x
+        });
+      });
+  }
+
 }
