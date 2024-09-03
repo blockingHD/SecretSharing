@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {CryptoService} from "../crypto.service";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-registration',
@@ -20,11 +21,15 @@ import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} fr
   }
 })
 export class RegistrationComponent implements OnInit {
+  @Output() registered = new EventEmitter<void>();
+
   public passwordForm: FormGroup<{
     password: FormControl<string | null>
   }> | undefined;
 
-  constructor(private cryptoService: CryptoService, private formBuilder: FormBuilder, private httpClient: HttpClient) {
+  constructor(private cryptoService: CryptoService,
+              private formBuilder: FormBuilder,
+              private httpClient: HttpClient) {
   }
 
   ngOnInit(): void {
@@ -42,9 +47,13 @@ export class RegistrationComponent implements OnInit {
 
     this.cryptoService.encrypt(password)
       .then(async x => {
-        this.httpClient.post('/api/user/keys', {
-          password: x
-        });
+        this.httpClient.post('/api/user/keys', x.json, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).subscribe(
+          () => this.registered!.emit()
+        );
       });
   }
 

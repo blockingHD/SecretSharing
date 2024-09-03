@@ -21,6 +21,7 @@ export const appConfig: ApplicationConfig = {
         redirect_uri: window.location.origin,
         scope: 'read:user'
       },
+      cacheLocation: 'localstorage',
       httpInterceptor: {
         allowedList: [
           {

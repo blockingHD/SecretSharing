@@ -29,10 +29,15 @@ public static class User
             if (userId == null)
                 return Results.Unauthorized();
             
-
             var user = await db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-
-            return user == null ? Results.NotFound() : Results.Ok(user);
+            
+            return user == null ? Results.NotFound() : Results.Ok(new UserKeysResponse(
+                user.UserId,
+                Convert.ToBase64String(user.PublicKey),
+                Convert.ToBase64String(user.PrivateKey),
+                Convert.ToBase64String(user.Salt),
+                Convert.ToBase64String(user.IV)
+            ));
         });
 
         userApi.MapPost("/keys",
@@ -54,9 +59,9 @@ public static class User
                 {
                     UserId = userId,
                     PublicKey = Convert.FromBase64String(request.PublicKey),
-                    PrivateKey = Convert.FromBase64String(request.PrivateKey),
-                    Salt = Convert.FromBase64String(request.salt),
-                    IV = Convert.FromBase64String(request.iv)
+                    PrivateKey = Convert.FromBase64String(request.EncryptedPrivateKey),
+                    Salt = Convert.FromBase64String(request.Salt),
+                    IV = Convert.FromBase64String(request.Iv)
                 };
 
                 db.Users.Add(user);
@@ -68,4 +73,5 @@ public static class User
     }
 }
 
-public record UserKeysRequest(string PublicKey, string PrivateKey, string salt, string iv);
+public record UserKeysRequest(string PublicKey, string EncryptedPrivateKey, string Salt, string Iv);
+public record UserKeysResponse(string userId, string PublicKey, string EncryptedPrivateKey, string Salt, string Iv);

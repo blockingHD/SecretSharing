@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Buffer } from 'buffer';
 
 @Injectable({
   providedIn: 'root'
@@ -138,17 +139,10 @@ class KeyMaterial {
 
   get json(): string {
     return JSON.stringify({
-      publicKey: Array.from(this.publicKey),
-      encryptedPrivateKey: Array.from(this.encryptedPrivateKey),
-      salt: Array.from(this.salt),
-      iv: Array.from(this.iv)
+      publicKey: Buffer.from(this.publicKey).toString('base64'),
+      encryptedPrivateKey: Buffer.from(this.encryptedPrivateKey).toString('base64'),
+      salt: Buffer.from(this.salt).toString('base64'),
+      iv: Buffer.from(this.iv).toString('base64')
     });
   }
-}
-
-interface KeyMaterialJSON {
-  publicKey: number[];
-  encryptedPrivateKey: number[];
-  salt: number[];
-  iv: number[];
 }

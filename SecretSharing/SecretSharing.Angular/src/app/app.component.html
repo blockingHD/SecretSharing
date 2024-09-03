@@ -4,7 +4,7 @@
     <app-page-selector/>
     <router-outlet/>
   } @else if ((isUserRegistered | async) === false) {
-    <app-registration />
+    <app-registration (registered)="checkRegistration()" />
   }
 </div>
 <p>{{ encrypted }}</p>

@@ -7,6 +7,8 @@ using User = SecretSharing.User.API.Endpoints.User;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -23,6 +25,7 @@ builder.Services.AddAuthorization();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
 });
 
 builder.AddNpgsqlDbContext<UserDbContext>("userdb");

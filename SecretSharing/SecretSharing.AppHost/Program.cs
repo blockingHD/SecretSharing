@@ -4,10 +4,12 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var cache = builder.AddRedis("cache");
 
-var userPostgres = builder.AddPostgres("userPostgres");
+var userPostgres = builder.AddPostgres("userPostgres")
+    .WithDataVolume();
 var userDatabase = userPostgres.AddDatabase("userdb");
 
 var secretsDatabase = builder.AddPostgres("secrets")
+    .WithDataVolume()
     .AddDatabase("secretsdb");
 
 var secretSharingApi = builder.AddProject<SecretSharing_User_API>("userapi")

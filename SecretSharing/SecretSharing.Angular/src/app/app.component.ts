@@ -5,7 +5,7 @@ import {AsyncPipe} from "@angular/common";
 import {HeaderComponent} from "./header/header.component";
 import {PageSelectorComponent} from "./page-selector/page-selector.component";
 import {HttpClient} from "@angular/common/http";
-import {catchError, map, Observable, of, take} from "rxjs";
+import {BehaviorSubject, catchError, map, Observable, of, take} from "rxjs";
 import {RegistrationComponent} from "./registration/registration.component";
 
 @Component({
@@ -18,16 +18,20 @@ import {RegistrationComponent} from "./registration/registration.component";
 export class AppComponent implements OnInit {
   title = 'SecretSharing';
   encrypted: string = '';
-  isUserRegistered: Observable<boolean> | null = null;
+  isUserRegistered = new BehaviorSubject<boolean | null>(null);
 
   constructor(private cryptoService: CryptoService, private httpClient: HttpClient) {
   }
 
   ngOnInit(): void {
-    this.isUserRegistered = this.httpClient.get('/api/user/keys')
+    this.checkRegistration();
+  }
+
+  checkRegistration(): void {
+    this.httpClient.get('/api/user/keys')
       .pipe(
-        map(() => true),
-        catchError(() => of(false))
-      );
+        map(() => this.isUserRegistered.next(true)),
+        catchError(async () => this.isUserRegistered.next(false))
+      ).subscribe();
   }
 }
