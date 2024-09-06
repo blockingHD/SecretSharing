@@ -8,18 +8,18 @@ var userPostgres = builder.AddPostgres("userPostgres")
     .WithDataVolume();
 var userDatabase = userPostgres.AddDatabase("userdb");
 
-var secretsDatabase = builder.AddPostgres("secrets")
-    .WithDataVolume()
-    .AddDatabase("secretsdb");
-
-var secretSharingApi = builder.AddProject<SecretSharing_User_API>("userapi")
-    .WithReference(cache)
+var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
     .WithReference(userDatabase)
     .WithReference(userPostgres)
     .WithExternalHttpEndpoints();
 
+var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secrets")
+    .WithReference(cache);
+    
+
 builder.AddNpmApp("angular", "../SecretSharing.Angular")
-    .WithReference(secretSharingApi)
+    .WithReference(userApi)
+    .WithReference(secretApi)
     .WithHttpEndpoint(env: "PORT", port: 4587)
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
