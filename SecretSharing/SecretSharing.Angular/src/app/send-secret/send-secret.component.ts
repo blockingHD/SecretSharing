@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {HttpClient} from "@angular/common/http";
+import {CryptoService} from "../crypto.service";
 
 @Component({
   selector: 'app-send-secret',
@@ -8,7 +11,8 @@ import {MatInput} from "@angular/material/input";
   imports: [
     MatFormField,
     MatLabel,
-    MatInput
+    MatInput,
+    ReactiveFormsModule
   ],
   templateUrl: './send-secret.component.html',
   styleUrl: './send-secret.component.css',
@@ -17,5 +21,30 @@ import {MatInput} from "@angular/material/input";
   }
 })
 export class SendSecretComponent {
+  public secretForm: FormGroup;
 
+  constructor(private fb: FormBuilder, private httpClient: HttpClient, private cryptoService: CryptoService) {
+    this.secretForm = this.fb.group({
+      to: ['', Validators.required],
+      secret: ['', Validators.required]
+    });
+  }
+
+  public sendSecret() {
+    this.httpClient.get(`/api/user/${this.secretForm.value.to}/keys`)
+      .subscribe(async (resp: any) => {
+        const secret = await this.cryptoService.encryptWithPublicKey(resp.publicKey as string, this.secretForm.value.secret);
+        const body = JSON.stringify(secret);
+        this.httpClient.post(`/api/secrets/${this.secretForm.value.to}`,
+          body,
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .subscribe(() => {
+            this.secretForm.reset()
+          });
+      });
+  }
 }

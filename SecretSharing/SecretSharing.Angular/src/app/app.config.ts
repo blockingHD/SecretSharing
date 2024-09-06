@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
       authorizationParams: {
         audience: 'api://userapi',
         redirect_uri: window.location.origin,
-        scope: 'read:user'
+        scope: 'read:user email',
       },
       cacheLocation: 'localstorage',
       httpInterceptor: {

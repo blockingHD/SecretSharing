@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SecretSharing.Secrets.API.Endpoints;
+using SecretSharing.Secrets.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +24,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.AddRedisDistributedCache("RedisConnection");
+builder.AddRedisDistributedCache("cache");
+builder.Services.AddScoped<ISecretService, SecretService>();
 
 var app = builder.Build();
 
@@ -37,3 +40,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.RegisterSecretsApi();
+
+app.Run();

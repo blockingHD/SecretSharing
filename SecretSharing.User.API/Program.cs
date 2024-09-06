@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using SecretSharing.User.API;
+using SecretSharing.User.API.Endpoints;
 using SecretSharing.User.API.models;
 using User = SecretSharing.User.API.Endpoints.User;
 
@@ -35,7 +36,7 @@ var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
 
-User.RegisterUserApi(app);
+app.RegisterUserApi();
 
 using var scope = app.Services.CreateScope();
 

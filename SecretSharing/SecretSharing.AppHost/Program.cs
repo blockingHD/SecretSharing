@@ -13,7 +13,7 @@ var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
     .WithReference(userPostgres)
     .WithExternalHttpEndpoints();
 
-var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secrets")
+var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secretsapi")
     .WithReference(cache);
     
 

@@ -95,6 +95,47 @@ export class CryptoService {
     );
   }
 
+  async encryptWithPublicKey(publicKey: string, message: string) {
+    const enc = new TextEncoder();
+    const publicKeyBuffer = Buffer.from(publicKey, 'base64');
+    const publicKeyImported = await window.crypto.subtle.importKey(
+      "spki",
+      publicKeyBuffer,
+      {name: "RSA-OAEP", hash: "SHA-256"},
+      true,
+      ["encrypt"]
+    );
+
+    const encrypted = window.crypto.subtle.encrypt(
+      {
+        name: "RSA-OAEP"
+      },
+      publicKeyImported,
+      enc.encode(message));
+
+    return Buffer.from(new Uint8Array(await encrypted)).toString('base64')
+  }
+
+  async decryptWithPrivateKey(privateKey: ArrayBuffer, message: string) {
+    const dec = new TextDecoder();
+    const privateKeyImported = await window.crypto.subtle.importKey(
+      "pkcs8",
+      privateKey,
+      {name: "RSA-OAEP", hash: "SHA-256"},
+      true,
+      ["decrypt"]
+    );
+
+    const decrypted = window.crypto.subtle.decrypt(
+      {
+        name: "RSA-OAEP"
+      },
+      privateKeyImported,
+      Buffer.from(message, 'base64'));
+
+    return dec.decode(new Uint8Array(await decrypted));
+  }
+
   /*
   Derive a key from a password supplied by the user, and use the key
   to decrypt the ciphertext.
@@ -124,7 +165,7 @@ export class CryptoService {
   }
 }
 
-class KeyMaterial {
+export class KeyMaterial {
   public publicKey: Uint8Array;
   public encryptedPrivateKey: Uint8Array;
   public salt: Uint8Array;
@@ -135,6 +176,15 @@ class KeyMaterial {
     this.encryptedPrivateKey = encryptedPrivateKey;
     this.salt = salt;
     this.iv = iv;
+  }
+
+  static fromObj(obj: any) {
+    return new KeyMaterial(
+      Buffer.from(obj.publicKey, 'base64'),
+      Buffer.from(obj.encryptedPrivateKey, 'base64'),
+      Buffer.from(obj.salt, 'base64'),
+      Buffer.from(obj.iv, 'base64')
+    );
   }
 
   get json(): string {

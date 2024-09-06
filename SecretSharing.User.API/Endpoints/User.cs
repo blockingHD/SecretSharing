@@ -1,7 +1,4 @@
-using System.Buffers.Text;
 using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,6 +39,18 @@ public static class User
             auth.RequireAssertion(
                 context => context.User.FindFirst(
                     c => c is { Type: "scope" } && c.Value.Contains("read:user")) != null);
+        });
+
+        userApi.MapGet("/{userId}/keys", async ([FromServices] UserDbContext db, string userId) =>
+        {
+            var user = await db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            
+            return user == null
+                ? Results.NotFound()
+                : Results.Ok(new PublicUserKeysResponse(
+                    user.UserId,
+                    Convert.ToBase64String(user.PublicKey)
+                ));
         });
 
         userApi.MapPost("/keys",
@@ -111,3 +120,4 @@ public static class User
 public record UserKeysRequest(string PublicKey, string EncryptedPrivateKey, string Salt, string Iv);
 
 public record UserKeysResponse(string userId, string PublicKey, string EncryptedPrivateKey, string Salt, string Iv);
+public record PublicUserKeysResponse(string userId, string PublicKey);
