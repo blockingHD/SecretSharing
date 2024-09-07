@@ -41,6 +41,8 @@ public static class Secrets
 
             var secret = await secretService.GetSecret(userId, secretId);
 
+            await secretService.DeleteSecret(userId, secretId);
+
             return secret == null
                 ? Results.NotFound()
                 : Results.Ok(secret);

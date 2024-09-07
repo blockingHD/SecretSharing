@@ -1,10 +1,10 @@
+using Auth0.ManagementApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using SecretSharing.User.API;
 using SecretSharing.User.API.Endpoints;
 using SecretSharing.User.API.models;
-using User = SecretSharing.User.API.Endpoints.User;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -31,12 +31,14 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.AddNpgsqlDbContext<UserDbContext>("userdb");
 
+builder.Services.AddScoped<IManagementApiClient, ManagementApiClient>();
+
 var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.RegisterUserApi();
+app.RegisterKeysApi();
 
 using var scope = app.Services.CreateScope();
 

@@ -3,15 +3,14 @@ using StackExchange.Redis;
 
 namespace SecretSharing.Secrets.API.Services;
 
-public class SecretService : ISecretService
+public class SecretService(IConnectionMultiplexer cacheConnection) : ISecretService
 {
-    private readonly IConnectionMultiplexer _cacheConnection;
-    private readonly IDatabase _cache;
+    private readonly IDatabase _cache = cacheConnection.GetDatabase();
 
-    public SecretService(IConnectionMultiplexer cacheConnection)
+    public async Task DeleteSecret(string userId, int secretId)
     {
-        _cacheConnection = cacheConnection;
-        _cache = cacheConnection.GetDatabase();
+        var key = $"{userId}:{secretId}";
+        await _cache.KeyDeleteAsync(key);
     }
 
     public async Task<Secret?> GetSecret(string userId, int secretId)
@@ -24,7 +23,7 @@ public class SecretService : ISecretService
 
     public async Task<ICollection<Secret>> GetSecrets(string userId)
     {
-        var server = _cacheConnection.GetServer(_cacheConnection.GetServers().First().EndPoint);
+        var server = cacheConnection.GetServer(cacheConnection.GetServers().First().EndPoint);
         var secrets = new List<Secret>();
         await foreach (var key in server.KeysAsync(pattern: $"{userId}:[^nextId]*"))
         {

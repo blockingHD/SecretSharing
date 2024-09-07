@@ -19,16 +19,44 @@ export const appConfig: ApplicationConfig = {
       authorizationParams: {
         audience: 'api://userapi',
         redirect_uri: window.location.origin,
-        scope: 'read:user email',
+        scope: 'email read:user write:user write:secrets read:secrets'
       },
       cacheLocation: 'localstorage',
       httpInterceptor: {
         allowedList: [
           {
-            uri: '/api/*',
+            httpMethod: 'GET',
+            uri: '/api/user/*',
             tokenOptions: {
               authorizationParams: {
                 scope: 'read:user'
+              }
+            }
+          },
+          {
+            httpMethod: 'POST',
+            uri: '/api/user/*',
+            tokenOptions: {
+              authorizationParams: {
+                scope: 'write:user'
+              }
+            }
+          },
+          {
+            httpMethod: 'GET',
+            uri: '/api/secrets/*',
+            tokenOptions: {
+              authorizationParams: {
+                scope: 'read:secrets'
+              }
+            }
+          },
+          {
+            httpMethod: 'POST',
+            uri: '/api/secrets/*',
+            tokenOptions: {
+              authorizationParams: {
+                scope: 'write:secrets'
               }
             }
           }

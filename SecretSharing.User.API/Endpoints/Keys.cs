@@ -4,17 +4,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SecretSharing.User.API.Endpoints;
 
-public static class User
+public static class Keys
 {
-    public static void RegisterUserApi(this WebApplication app)
+    public static void RegisterKeysApi(this WebApplication app)
     {
-        var userApi = app.MapGroup("/user")
+        var keysApi = app.MapGroup("/users")
             .RequireAuthorization(auth =>
             {
                 auth.RequireAuthenticatedUser();
             });
 
-        userApi.MapGet("/keys", async
+        keysApi.MapGet("/me/keys", async
             ([FromServices] UserDbContext db, HttpContext http) =>
         {
             var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -41,7 +41,7 @@ public static class User
                     c => c is { Type: "scope" } && c.Value.Contains("read:user")) != null);
         });
 
-        userApi.MapGet("/{userId}/keys", async ([FromServices] UserDbContext db, string userId) =>
+        keysApi.MapGet("/{userId}/keys", async ([FromServices] UserDbContext db, string userId) =>
         {
             var user = await db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             
@@ -53,7 +53,7 @@ public static class User
                 ));
         });
 
-        userApi.MapPost("/keys",
+        keysApi.MapPost("/me/keys",
             async ([FromServices] UserDbContext db, HttpContext http, [FromBody] UserKeysRequest request) =>
             {
                 var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -88,7 +88,7 @@ public static class User
                     c => c is { Type: "scope" } && c.Value.Contains("write:user")) != null);
         });
 
-        userApi.MapDelete("/keys", async ([FromServices] UserDbContext db, HttpContext http) =>
+        keysApi.MapDelete("/me/keys", async ([FromServices] UserDbContext db, HttpContext http) =>
         {
             var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
