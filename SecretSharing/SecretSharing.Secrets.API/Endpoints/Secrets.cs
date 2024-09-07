@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using SecretSharing.Secrets.API.Models;
 using SecretSharing.Secrets.API.Services;
+using SecretSharing.ServiceDefaults.Attribute;
 
 namespace SecretSharing.Secrets.API.Endpoints;
 
@@ -46,7 +46,9 @@ public static class Secrets
             return secret == null
                 ? Results.NotFound()
                 : Results.Ok(secret);
-        });
+        })
+        .AddEndpointFilter<EventLoggerFilter>()
+        .WithMetadata(new Event("secret.read"));
         
         secretsApi.MapPost("/{userId}", async
             ([FromServices] ISecretService secretService, HttpContext http, string userId, [FromBody] string secret) =>
@@ -56,7 +58,9 @@ public static class Secrets
             var id = await secretService.SetSecret(userId, new Secret(0, email, DateTime.UtcNow, secret));
 
             return Results.Created($"/secrets/{id}", secret);
-        });
+        })
+        .AddEndpointFilter<EventLoggerFilter>()
+        .WithMetadata(new Event("secret.create"));
 
     }
 }

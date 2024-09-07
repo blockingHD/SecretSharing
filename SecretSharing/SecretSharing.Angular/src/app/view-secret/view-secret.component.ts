@@ -37,7 +37,7 @@ export class ViewSecretComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.secret$ = forkJoin([this.httpClient.get('/api/user/keys'), this.httpClient.get<SecretValue>(`/api/secrets/${this.data.secretId}`)])
+    this.secret$ = forkJoin([this.httpClient.get('/api/users/me/keys'), this.httpClient.get<SecretValue>(`/api/secrets/${this.data.secretId}`)])
       .pipe(switchMap(async ([keys, secret]) => {
         const privateKey = await this.cryptoService.decrypt(KeyMaterial.fromObj(keys), 'Test');
         return await this.cryptoService.decryptWithPrivateKey(privateKey, secret.secretValue);

@@ -26,6 +26,7 @@ builder.Services.AddSwaggerGen();
 
 builder.AddRedisDistributedCache("cache");
 builder.Services.AddScoped<ISecretService, SecretService>();
+builder.AddRabbitMQClient("messaging");
 
 var app = builder.Build();
 

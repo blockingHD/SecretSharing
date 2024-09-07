@@ -29,6 +29,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 builder.AddNpgsqlDbContext<UserDbContext>("userdb");
+builder.AddRabbitMQClient("messaging");
 
 var app = builder.Build();
 

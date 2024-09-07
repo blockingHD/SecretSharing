@@ -1,5 +1,5 @@
 module.exports = {
-  "/api/user/**": {
+  "/api/users/**": {
     target:
       process.env["services__userapi__https__0"] ||
       process.env["services__userapi__http__0"],

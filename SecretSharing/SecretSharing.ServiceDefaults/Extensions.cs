@@ -19,6 +19,8 @@ public static class Extensions
         builder.ConfigureOpenTelemetry();
 
         builder.AddDefaultHealthChecks();
+        
+        builder.SetupRabbitMQ();
 
         builder.Services.AddServiceDiscovery();
 
@@ -86,6 +88,15 @@ public static class Extensions
         builder.Services.AddHealthChecks()
             // Add a default liveness check to ensure app is responsive
             .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+
+        return builder;
+    }
+    
+    public static IHostApplicationBuilder SetupRabbitMQ(this IHostApplicationBuilder builder)
+    {
+        builder.AddRabbitMQClient("messaging");
+
+        builder.Services.AddSingleton<IEventLogger, RabbitSetup>();
 
         return builder;
     }

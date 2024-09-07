@@ -26,7 +26,7 @@ export const appConfig: ApplicationConfig = {
         allowedList: [
           {
             httpMethod: 'GET',
-            uri: '/api/user/*',
+            uri: '/api/users/*',
             tokenOptions: {
               authorizationParams: {
                 scope: 'read:user'
@@ -35,7 +35,7 @@ export const appConfig: ApplicationConfig = {
           },
           {
             httpMethod: 'POST',
-            uri: '/api/user/*',
+            uri: '/api/users/*',
             tokenOptions: {
               authorizationParams: {
                 scope: 'write:user'

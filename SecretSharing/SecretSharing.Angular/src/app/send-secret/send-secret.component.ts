@@ -31,7 +31,7 @@ export class SendSecretComponent {
   }
 
   public sendSecret() {
-    this.httpClient.get(`/api/user/${this.secretForm.value.to}/keys`)
+    this.httpClient.get(`/api/users/${this.secretForm.value.to}/keys`)
       .subscribe(async (resp: any) => {
         const secret = await this.cryptoService.encryptWithPublicKey(resp.publicKey as string, this.secretForm.value.secret);
         const body = JSON.stringify(secret);

@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
   }
 
   checkRegistration(): void {
-    this.httpClient.get('/api/user/keys')
+    this.httpClient.get('/api/users/me/keys')
       .pipe(
         map(() => this.isUserRegistered.next(true)),
         catchError(async () => this.isUserRegistered.next(false))
