@@ -1,4 +1,3 @@
-using Auth0.ManagementApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -30,8 +29,6 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 builder.AddNpgsqlDbContext<UserDbContext>("userdb");
-
-builder.Services.AddScoped<IManagementApiClient, ManagementApiClient>();
 
 var app = builder.Build();
 
