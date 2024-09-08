@@ -1,0 +1,6 @@
+﻿services:
+  secretsharing.worker:
+    image: secretsharing.worker
+    build:
+      context: .
+      dockerfile: SecretSharing/SecretSharing.Worker/Dockerfile

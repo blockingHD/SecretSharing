@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using System.Text.Json;
-using System.Web;
 using Microsoft.AspNetCore.Http;
 
 namespace SecretSharing.ServiceDefaults.Attribute;
@@ -29,7 +28,7 @@ public record EventLoggerBody
     public static EventLoggerBody CreateFromHttpContext(HttpContext http)
     {
         var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-        var path = HttpUtility.UrlDecode(http.Request.Path);
+        var path = http.Request.Path;
         
         return new EventLoggerBody(userId, path);
     }

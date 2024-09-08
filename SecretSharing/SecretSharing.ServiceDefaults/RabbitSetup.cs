@@ -19,6 +19,8 @@ public class RabbitSetup : IEventLogger
         using var channel = _connection.CreateModel();
         
         channel.ExchangeDeclare("events", ExchangeType.Topic, durable: true);
+        channel.QueueDeclare("logging", durable: true, exclusive: false, autoDelete: false);
+        channel.QueueBind("logging", "events", "#");
     }
     
     public void PostMessage(string eventName, string message)

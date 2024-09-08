@@ -23,6 +23,17 @@ var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secretsapi")
     .WithReference(cache)
     .WithReference(messaging);
 
+var loggerPostgres = builder.AddPostgres("loggerPostgres")
+    .WithDataVolume();
+
+var logDatabase = loggerPostgres.AddDatabase("logdb");
+
+var loggingFunction =
+    builder.AddProject<SecretSharing_Worker>("loggingFunction")
+        .WithReference(messaging)
+        .WithReference(loggerPostgres)
+        .WithReference(logDatabase);
+
 builder.AddNpmApp("angular", "../SecretSharing.Angular")
     .WithReference(userApi)
     .WithReference(secretApi)
