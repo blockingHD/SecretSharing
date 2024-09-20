@@ -29,7 +29,7 @@ using var scope = host.Services.CreateScope();
 bool canConnect;
 var tries = 10;
 var dbConnection = new NpgsqlConnection(host.Services
-    .GetRequiredService<IConfiguration>().GetConnectionString("loggerPostgres"));
+    .GetRequiredService<IConfiguration>().GetConnectionString("logger-postgres"));
 do
 {
     try

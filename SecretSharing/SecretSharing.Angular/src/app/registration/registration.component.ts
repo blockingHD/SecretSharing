@@ -47,7 +47,7 @@ export class RegistrationComponent implements OnInit {
 
     this.cryptoService.encrypt(password)
       .then(async x => {
-        this.httpClient.post('/api/user/me/keys', x.json, {
+        this.httpClient.post('/api/users/me/keys', x.json, {
           headers: {
             'Content-Type': 'application/json'
           }

@@ -42,7 +42,7 @@ using var scope = app.Services.CreateScope();
 
 bool canConnect;
 var tries = 10;
-var connection = new NpgsqlConnection(app.Configuration.GetConnectionString("userPostgres"));
+var connection = new NpgsqlConnection(app.Configuration.GetConnectionString("user-postgres"));
 do
 {
     try

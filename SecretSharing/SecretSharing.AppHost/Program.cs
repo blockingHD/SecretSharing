@@ -3,13 +3,13 @@ using Projects;
 var builder = DistributedApplication.CreateBuilder(args);
 
 var cache = builder.AddRedis("cache")
-    .WithDataVolume()
+    //.WithDataVolume()
     .WithPersistence(TimeSpan.FromSeconds(1));
 
 var messaging = builder.AddRabbitMQ("messaging");
 
-var userPostgres = builder.AddPostgres("userPostgres")
-    .WithDataVolume();
+var userPostgres = builder.AddPostgres("user-postgres");
+    //.WithDataVolume();
 
 var userDatabase = userPostgres.AddDatabase("userdb");
 
@@ -23,13 +23,13 @@ var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secretsapi")
     .WithReference(cache)
     .WithReference(messaging);
 
-var loggerPostgres = builder.AddPostgres("loggerPostgres")
-    .WithDataVolume();
+var loggerPostgres = builder.AddPostgres("logger-postgres");
+    //.WithDataVolume();
 
 var logDatabase = loggerPostgres.AddDatabase("logdb");
 
 var loggingFunction =
-    builder.AddProject<SecretSharing_Worker>("loggingFunction")
+    builder.AddProject<SecretSharing_Worker>("logging-function")
         .WithReference(messaging)
         .WithReference(loggerPostgres)
         .WithReference(logDatabase);
@@ -37,7 +37,7 @@ var loggingFunction =
 builder.AddNpmApp("angular", "../SecretSharing.Angular")
     .WithReference(userApi)
     .WithReference(secretApi)
-    .WithHttpEndpoint(env: "PORT", port: 4587)
+    .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
 
