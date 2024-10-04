@@ -25,7 +25,7 @@ public class Worker : BackgroundService
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
-            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            _logger.LogInformation("Worker running at: {Time}", DateTimeOffset.Now);
         }
 
         Channel = _connection.CreateModel();
@@ -38,7 +38,7 @@ public class Worker : BackgroundService
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Received message: {message}", message);
+                _logger.LogInformation("Received message: {Message}", message);
             }
             
             var log = JsonSerializer.Deserialize<EventLoggerBody>(message);

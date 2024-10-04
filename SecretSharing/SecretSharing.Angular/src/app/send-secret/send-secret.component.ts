@@ -23,7 +23,7 @@ import {CryptoService} from "../crypto.service";
 export class SendSecretComponent {
   public secretForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private httpClient: HttpClient, private cryptoService: CryptoService) {
+  constructor(private readonly fb: FormBuilder, private readonly httpClient: HttpClient, private readonly cryptoService: CryptoService) {
     this.secretForm = this.fb.group({
       to: ['', Validators.required],
       secret: ['', Validators.required]

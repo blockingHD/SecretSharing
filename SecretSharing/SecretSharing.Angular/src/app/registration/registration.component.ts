@@ -4,7 +4,6 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {CryptoService} from "../crypto.service";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-registration',
@@ -27,9 +26,9 @@ export class RegistrationComponent implements OnInit {
     password: FormControl<string | null>
   }> | undefined;
 
-  constructor(private cryptoService: CryptoService,
-              private formBuilder: FormBuilder,
-              private httpClient: HttpClient) {
+  constructor(private readonly cryptoService: CryptoService,
+              private readonly formBuilder: FormBuilder,
+              private readonly httpClient: HttpClient) {
   }
 
   ngOnInit(): void {
@@ -52,7 +51,7 @@ export class RegistrationComponent implements OnInit {
             'Content-Type': 'application/json'
           }
         }).subscribe(
-          () => this.registered!.emit()
+          () => this.registered.emit()
         );
       });
   }

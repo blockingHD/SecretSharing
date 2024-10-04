@@ -11,11 +11,11 @@ COPY ["SecretSharing/SecretSharing.Secrets.API/SecretSharing.Secrets.API.csproj"
 RUN dotnet restore "SecretSharing/SecretSharing.Secrets.API/SecretSharing.Secrets.API.csproj"
 COPY . .
 WORKDIR "/src/SecretSharing/SecretSharing.Secrets.API"
-RUN dotnet build "SecretSharing.Secrets.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "SecretSharing.Secrets.API.csproj" -c "$BUILD_CONFIGURATION" -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "SecretSharing.Secrets.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "SecretSharing.Secrets.API.csproj" -c "$BUILD_CONFIGURATION" -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

@@ -45,7 +45,7 @@ export class MySecretsComponent implements OnInit{
   public tableHeaders = ['sentBy', 'received', 'expires', 'openIcon'];
   public secrets$: Observable<Secret[]> | null = null;
 
-  constructor(private httpClient: HttpClient, private dialog: MatDialog) {
+  constructor(private readonly httpClient: HttpClient, private readonly dialog: MatDialog) {
   }
 
   ngOnInit(): void {

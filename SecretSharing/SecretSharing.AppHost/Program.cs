@@ -35,22 +35,18 @@ var loggingFunction =
 var angular = builder.AddNpmApp("angular", "../SecretSharing.Angular")
     .WithReference(userApi)
     .WithReference(secretApi)
+    .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
 
 if (builder.Environment.IsDevelopment())
 {
-    angular
-        .WithHttpEndpoint(env: "PORT", port: 4587);
-
-    cache.WithDataVolume();
-    userPostgres.WithDataVolume();
-    loggerPostgres.WithDataVolume();
-}
-else
-{
-    angular
-        .WithHttpEndpoint(env: "PORT");
+    // angular
+    //     .WithHttpEndpoint(env: "PORT", port: 4587);
+    //
+    // cache.WithDataVolume();
+    // userPostgres.WithDataVolume();
+    // loggerPostgres.WithDataVolume();
 }
 
 builder.Build().Run();

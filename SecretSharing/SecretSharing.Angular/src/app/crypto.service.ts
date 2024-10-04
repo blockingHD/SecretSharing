@@ -146,13 +146,13 @@ export class CryptoService {
   */
   async decrypt(keyMaterial: KeyMaterial, password: string) {
     let derivationKey = await this.getKeyMaterial(password);
-    let key = await this.getKey(derivationKey, keyMaterial.salt!);
+    let key = await this.getKey(derivationKey, keyMaterial.salt);
 
     try {
       let decrypted = await window.crypto.subtle.decrypt(
         {
           name: "AES-GCM",
-          iv: keyMaterial.iv!
+          iv: keyMaterial.iv
         },
         key,
         keyMaterial.encryptedPrivateKey

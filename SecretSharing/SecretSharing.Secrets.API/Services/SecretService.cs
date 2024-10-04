@@ -23,7 +23,7 @@ public class SecretService(IConnectionMultiplexer cacheConnection) : ISecretServ
 
     public async Task<ICollection<Secret>> GetSecrets(string userId)
     {
-        var server = cacheConnection.GetServer(cacheConnection.GetServers().First().EndPoint);
+        var server = cacheConnection.GetServer(cacheConnection.GetServers()[0].EndPoint);
         var secrets = new List<Secret>();
         await foreach (var key in server.KeysAsync(pattern: $"{userId}:[^nextId]*"))
         {

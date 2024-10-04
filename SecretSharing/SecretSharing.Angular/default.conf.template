@@ -2,10 +2,14 @@ server {
     listen       ${PORT};
     listen  [::]:${PORT};
     server_name  localhost;
+    server_tokens off;
 
     access_log  /var/log/nginx/server.access.log  main;
 
-    add_header Content-Security-Policy "default-src 'self';" always;
+    add_header Content-Security-Policy "default-src 'self' 'unsafe-inline'; font-src https://fonts.gstatic.com/; frame-ancestors 'none'; form-action 'none';" always;
+    add_header Strict-Transport-Security "max-age=31536000;" always;
+    add_header X-Content-Type-Options "'nosniff'" always;
+    add_header Cache-Control "no-cache" always;
 
     location / {
         access_log  /var/log/nginx/root.access.log  main;

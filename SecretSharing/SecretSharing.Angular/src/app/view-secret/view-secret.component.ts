@@ -7,7 +7,7 @@ import {
   MatDialogRef,
   MatDialogTitle
 } from '@angular/material/dialog';
-import {catchError, forkJoin, map, Observable, of, switchMap} from "rxjs";
+import {catchError, forkJoin, Observable, of, switchMap} from "rxjs";
 import {Secret} from "../my-secrets/my-secrets.component";
 import {AsyncPipe} from "@angular/common";
 import {MatButton} from "@angular/material/button";
@@ -35,11 +35,11 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 export class ViewSecretComponent {
   public secret$: Observable<string> | null = null;
 
-  constructor(private httpClient: HttpClient,
-              private cryptoService: CryptoService,
-              private dialogRef: MatDialogRef<ViewSecretComponent>,
-              private snackbar: MatSnackBar,
-              @Inject(MAT_DIALOG_DATA) public data: Secret
+  constructor(private readonly httpClient: HttpClient,
+              private readonly cryptoService: CryptoService,
+              private readonly dialogRef: MatDialogRef<ViewSecretComponent>,
+              private readonly snackbar: MatSnackBar,
+              @Inject(MAT_DIALOG_DATA) public readonly data: Secret
   ) {
   }
 
