@@ -1,15 +1,14 @@
+using Microsoft.Extensions.Hosting;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
 var cache = builder.AddRedis("cache")
-    //.WithDataVolume()
     .WithPersistence(TimeSpan.FromSeconds(1));
 
 var messaging = builder.AddRabbitMQ("messaging");
 
 var userPostgres = builder.AddPostgres("user-postgres");
-    //.WithDataVolume();
 
 var userDatabase = userPostgres.AddDatabase("userdb");
 
@@ -24,7 +23,6 @@ var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secretsapi")
     .WithReference(messaging);
 
 var loggerPostgres = builder.AddPostgres("logger-postgres");
-    //.WithDataVolume();
 
 var logDatabase = loggerPostgres.AddDatabase("logdb");
 
@@ -34,11 +32,25 @@ var loggingFunction =
         .WithReference(loggerPostgres)
         .WithReference(logDatabase);
 
-builder.AddNpmApp("angular", "../SecretSharing.Angular")
+var angular = builder.AddNpmApp("angular", "../SecretSharing.Angular")
     .WithReference(userApi)
     .WithReference(secretApi)
-    .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
+
+if (builder.Environment.IsDevelopment())
+{
+    angular
+        .WithHttpEndpoint(env: "PORT", port: 4587);
+
+    cache.WithDataVolume();
+    userPostgres.WithDataVolume();
+    loggerPostgres.WithDataVolume();
+}
+else
+{
+    angular
+        .WithHttpEndpoint(env: "PORT");
+}
 
 builder.Build().Run();

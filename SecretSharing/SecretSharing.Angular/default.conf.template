@@ -5,6 +5,8 @@ server {
 
     access_log  /var/log/nginx/server.access.log  main;
 
+    add_header Content-Security-Policy "default-src 'self';" always;
+
     location / {
         access_log  /var/log/nginx/root.access.log  main;
         root /usr/share/nginx/html;
