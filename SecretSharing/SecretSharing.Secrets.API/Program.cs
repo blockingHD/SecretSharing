@@ -24,7 +24,11 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.AddRedisDistributedCache("cache");
+builder.AddRedisDistributedCache("cache", configureOptions: options =>
+{
+    options.EndPoints.Add(builder.Configuration.GetConnectionString("secondcache"));
+});
+
 builder.Services.AddScoped<ISecretService, SecretService>();
 builder.AddRabbitMQClient("messaging");
 

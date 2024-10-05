@@ -6,7 +6,7 @@ server {
 
     access_log  /var/log/nginx/server.access.log  main;
 
-    add_header Content-Security-Policy "default-src 'self' 'unsafe-inline'; font-src https://fonts.gstatic.com/; frame-ancestors 'none'; form-action 'none';" always;
+    add_header Content-Security-Policy "default-src https://dev-kbivp6b1lxnmfboj.uk.auth0.com/ 'self' 'unsafe-inline'; font-src https://fonts.gstatic.com/; frame-ancestors 'none'; form-action 'none';" always;
     add_header Strict-Transport-Security "max-age=31536000;" always;
     add_header X-Content-Type-Options "'nosniff'" always;
     add_header Cache-Control "no-cache" always;

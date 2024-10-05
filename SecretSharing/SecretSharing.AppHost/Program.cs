@@ -3,7 +3,10 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var cache = builder.AddRedis("cache")
+var cache = builder.AddRedis("cache", port: 6379)
+    .WithPersistence(TimeSpan.FromSeconds(1));
+
+var secondCache = builder.AddRedis("secondcache", port: 6380)
     .WithPersistence(TimeSpan.FromSeconds(1));
 
 var messaging = builder.AddRabbitMQ("messaging");
@@ -20,6 +23,7 @@ var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
 
 var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secretsapi")
     .WithReference(cache)
+    .WithReference(secondCache)
     .WithReference(messaging);
 
 var loggerPostgres = builder.AddPostgres("logger-postgres");
