@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;using SecretSharing.Secrets.API;
 using SecretSharing.Secrets.API.Endpoints;
 using SecretSharing.Secrets.API.Services;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+await app.SetupReplication(app.Services.GetRequiredService<IConnectionMultiplexer>());
 
 app.RegisterSecretsApi();
 

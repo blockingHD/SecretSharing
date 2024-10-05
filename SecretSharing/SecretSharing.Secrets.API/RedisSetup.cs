@@ -2,20 +2,13 @@ using StackExchange.Redis;
 
 namespace SecretSharing.Secrets.API;
 
-public class RedisSetup
+public static class RedisSetup
 {
-    private readonly IConnectionMultiplexer _cacheConnection;
-
-    public RedisSetup(IConnectionMultiplexer cacheConnection)
-    {
-        _cacheConnection = cacheConnection;
-    }
-
-    public async Task SetupReplication()
+    public static async Task SetupReplication(this IApplicationBuilder _, IConnectionMultiplexer cacheConnection)
     {
         var retries = 0;
-        var primary = _cacheConnection.GetServers()[0];
-        var secondary = _cacheConnection.GetServers()[1];
+        var primary = cacheConnection.GetServers()[0];
+        var secondary = cacheConnection.GetServers()[1];
         while (!primary.IsConnected && !secondary.IsConnected && retries < 10)
         {
             retries++;
