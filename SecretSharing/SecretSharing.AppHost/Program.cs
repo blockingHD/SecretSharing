@@ -1,19 +1,18 @@
-using Microsoft.Extensions.Hosting;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
-
-var cache = builder.AddRedis("cache", port: 6379)
-    .WithPersistence(TimeSpan.FromSeconds(1));
-
-var secondCache = builder.AddRedis("secondcache", port: 6380)
-    .WithPersistence(TimeSpan.FromSeconds(1));
 
 var messaging = builder.AddRabbitMQ("messaging");
 
 var userPostgres = builder.AddPostgres("user-postgres");
 
 var userDatabase = userPostgres.AddDatabase("userdb");
+
+var mongoDb = builder.AddMongoDB("mongo", port: 61640)
+    .WithArgs("--replSet", "rs0");
+
+var mongoDb2 = builder.AddMongoDB("mongo2", port: 61673)
+    .WithArgs("--replSet", "rs0");
 
 var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
     .WithReference(userDatabase)
@@ -22,8 +21,7 @@ var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
     .WithExternalHttpEndpoints();
 
 var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secretsapi")
-    .WithReference(cache)
-    .WithReference(secondCache)
+    .WithReference(mongoDb)
     .WithReference(messaging);
 
 var loggerPostgres = builder.AddPostgres("logger-postgres");

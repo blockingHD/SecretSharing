@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;using SecretSharing.Secrets.API;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using SecretSharing.Secrets.API.Endpoints;
 using SecretSharing.Secrets.API.Services;
-using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,13 +26,13 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.AddRedisDistributedCache("cache", configureOptions: options =>
-{
-    options.EndPoints.Add(builder.Configuration.GetConnectionString("secondcache"));
-});
-
 builder.Services.AddScoped<ISecretService, SecretService>();
 builder.AddRabbitMQClient("messaging");
+builder.AddMongoDBClient("mongo", configureClientSettings: settings =>
+{
+    settings.ReplicaSetName = "rs0";
+    settings.DirectConnection = true;
+});
 
 var app = builder.Build();
 
@@ -47,8 +48,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-await app.SetupReplication(app.Services.GetRequiredService<IConnectionMultiplexer>());
-
 app.RegisterSecretsApi();
+
+var mongoClient = app.Services.GetRequiredService<IMongoClient>();
+var database = mongoClient.GetDatabase("admin");
+database.RunCommand<BsonDocument>("{ replSetInitiate: {_id: \"rs0\",members: [{_id: 0, host: \"host.docker.internal:61640\"},{_id: 1, host: \"host.docker.internal:61673\"}]}}");
 
 app.Run();

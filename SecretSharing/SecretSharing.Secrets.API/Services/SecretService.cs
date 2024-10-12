@@ -1,57 +1,60 @@
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using SecretSharing.Secrets.API.Models;
-using StackExchange.Redis;
 
 namespace SecretSharing.Secrets.API.Services;
 
-public class SecretService(IConnectionMultiplexer cacheConnection) : ISecretService
+public class SecretService(IMongoClient mongoClient) : ISecretService
 {
-    private readonly IDatabase _cache = cacheConnection.GetDatabase();
-
-    public async Task DeleteSecret(string userId, int secretId)
-    {
-        var key = $"{userId}:{secretId}";
-        await _cache.KeyDeleteAsync(key);
-    }
+    private readonly IMongoDatabase _database = mongoClient.GetDatabase("secrets");
 
     public async Task<Secret?> GetSecret(string userId, int secretId)
     {
-        var key = $"{userId}:{secretId}";
-
-        var value = await _cache.HashGetAsync(key, ["SenderEmail", "CreatedDate", "SecretValue"]);
-        return value.Any(x => x.IsNull) ? null : new Secret(secretId, value[0], DateTime.Parse(value[1]), value[2]);
+        var userCollection = _database.GetCollection<Secret>(userId);
+        var search = await userCollection.FindAsync(x => x.SecretId == secretId);
+        return search.FirstOrDefault();
     }
 
     public async Task<ICollection<Secret>> GetSecrets(string userId)
     {
-        IServer server;
-        var nextServer = 0;
-        do
-        {
-            server = cacheConnection.GetServer(cacheConnection.GetServers()[nextServer].EndPoint);
-            nextServer++;
-        } while (!server.IsConnected);
-
-        var secrets = new List<Secret>();
-        await foreach (var key in server.KeysAsync(pattern: $"{userId}:[^nextId]*"))
-        {
-            var value = await _cache.HashGetAsync(key, ["SenderEmail", "CreatedDate", "SecretValue"]);
-            if (!value.Any(x => x.IsNull))
-            {
-                secrets.Add(new Secret(int.Parse(key.ToString().Split(':')[1]), value[0], DateTime.Parse(value[1]), null));
-            }
-        }
-        
-        return secrets;
+        var userCollection = _database.GetCollection<Secret>(userId).AsQueryable();
+        return await userCollection.OrderByDescending(x => x.CreatedDate).Take(10).ToListAsync();
     }
 
     public async Task<int> SetSecret(string userId, Secret secret)
     {
-        var keyId = $"{userId}:nextId";
+        var collections = 
+            await _database.ListCollectionsAsync(new ListCollectionsOptions
+            {
+                Filter = new BsonDocument("name", userId)
+            });
+
+        if (!await collections.AnyAsync())
+        {
+            await _database.CreateCollectionAsync(userId);
+            await _database.GetCollection<Secret>(userId)
+                .Indexes.CreateOneAsync(
+                    new CreateIndexModel<Secret>(
+                        Builders<Secret>.IndexKeys.Ascending(x => x.CreatedDate),
+                        new CreateIndexOptions { ExpireAfter = TimeSpan.FromDays(1) })
+                    );
+        }
         
-        var nextId = await _cache.StringIncrementAsync(keyId);
-        var key = $"{userId}:{nextId}";
-        await _cache.HashSetAsync(key, secret.ToHashEntryArray());
-        
-        return (int)nextId;
+        var userCollection = _database.GetCollection<Secret>(userId);
+        var secretToSave = secret with
+        {
+            SecretId = await userCollection.AsQueryable()
+                .OrderByDescending(x => x.CreatedDate)
+                .Select(x => x.SecretId).FirstOrDefaultAsync() + 1
+        };
+        await userCollection.InsertOneAsync(secretToSave);
+        return secret.SecretId;
+    }
+
+    public Task DeleteSecret(string userId, int secretId)
+    {
+        var userCollection = _database.GetCollection<Secret>(userId);
+        return userCollection.DeleteOneAsync(x => x.SecretId == secretId);
     }
 }
