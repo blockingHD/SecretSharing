@@ -4,3 +4,9 @@
     build:
       context: .
       dockerfile: SecretSharing/SecretSharing.Worker/Dockerfile
+
+  secretsharing.apphost:
+    image: secretsharing.apphost
+    build:
+      context: .
+      dockerfile: SecretSharing/SecretSharing.AppHost/Dockerfile

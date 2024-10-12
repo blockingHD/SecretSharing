@@ -1,6 +1,9 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Connections;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Clusters;
 using SecretSharing.Secrets.API.Endpoints;
 using SecretSharing.Secrets.API.Services;
 
@@ -31,7 +34,7 @@ builder.AddRabbitMQClient("messaging");
 builder.AddMongoDBClient("mongo", configureClientSettings: settings =>
 {
     settings.ReplicaSetName = "rs0";
-    settings.ReadPreference = ReadPreference.Secondary;
+    settings.DirectConnection = true;
 });
 
 var app = builder.Build();
@@ -58,6 +61,16 @@ var settings = new MongoClientSettings
 };
 var mongoClient = new MongoClient(settings);
 var database = mongoClient.GetDatabase("admin");
-database.RunCommand<BsonDocument>("{ replSetInitiate: {_id: \"rs0\",members: [{_id: 0, host: \"host.docker.internal:61640\", \"votes\" : 1},{_id: 1, host: \"host.docker.internal:61673\", \"votes\" : 1},{_id: 2, host: \"host.docker.internal:61689\", \"votes\" : 1}]}}");
+var members = app.Configuration.GetSection("ConnectionStrings")
+    .GetChildren()
+    .Where(x => x.Key.Contains("mongo"))
+    .Select(x => x.Value!.Replace("mongodb://", ""))
+    .Select(x => x.Contains("localhost") ? new UriEndPoint(new Uri(x.Replace("localhost", "host.docker.internal"))) : new UriEndPoint(new Uri(x)))
+    .ToList();
+var config = JsonSerializer.Serialize(new {
+    _id = "rs0",
+    members = members.Select((x, i) => new { _id = i, host = x.ToString() })
+});
+database.RunCommand<BsonDocument>($"{{ replSetInitiate: {config}}}");
 
 app.Run();
