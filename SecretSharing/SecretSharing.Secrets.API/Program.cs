@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Connections;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.Core.Clusters;
 using SecretSharing.Secrets.API.Endpoints;
 using SecretSharing.Secrets.API.Services;
 
@@ -71,6 +70,7 @@ var config = JsonSerializer.Serialize(new {
     _id = "rs0",
     members = members.Select((x, i) => new { _id = i, host = x.ToString() })
 });
+
 database.RunCommand<BsonDocument>($"{{ replSetInitiate: {config}}}");
 
 app.Run();
