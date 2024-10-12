@@ -31,7 +31,7 @@ builder.AddRabbitMQClient("messaging");
 builder.AddMongoDBClient("mongo", configureClientSettings: settings =>
 {
     settings.ReplicaSetName = "rs0";
-    settings.DirectConnection = true;
+    settings.ReadPreference = ReadPreference.Secondary;
 });
 
 var app = builder.Build();
@@ -50,8 +50,14 @@ app.UseHttpsRedirection();
 
 app.RegisterSecretsApi();
 
-var mongoClient = app.Services.GetRequiredService<IMongoClient>();
+var settings = new MongoClientSettings
+{
+    Server = MongoServerAddress.Parse(app.Configuration.GetConnectionString("mongo")!.Replace("mongodb://", "")),
+    DirectConnection = true,
+    ReplicaSetName = "rs0"
+};
+var mongoClient = new MongoClient(settings);
 var database = mongoClient.GetDatabase("admin");
-database.RunCommand<BsonDocument>("{ replSetInitiate: {_id: \"rs0\",members: [{_id: 0, host: \"host.docker.internal:61640\"},{_id: 1, host: \"host.docker.internal:61673\"}]}}");
+database.RunCommand<BsonDocument>("{ replSetInitiate: {_id: \"rs0\",members: [{_id: 0, host: \"host.docker.internal:61640\", \"votes\" : 1},{_id: 1, host: \"host.docker.internal:61673\", \"votes\" : 1},{_id: 2, host: \"host.docker.internal:61689\", \"votes\" : 1}]}}");
 
 app.Run();

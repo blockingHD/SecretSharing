@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Hosting;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -9,10 +10,13 @@ var userPostgres = builder.AddPostgres("user-postgres");
 var userDatabase = userPostgres.AddDatabase("userdb");
 
 var mongoDb = builder.AddMongoDB("mongo", port: 61640)
-    .WithArgs("--replSet", "rs0");
+    .WithArgs("--replSet", "rs0", "--bind_ip_all");
 
 var mongoDb2 = builder.AddMongoDB("mongo2", port: 61673)
-    .WithArgs("--replSet", "rs0");
+    .WithArgs("--replSet", "rs0", "--bind_ip_all");
+
+var mongoDb3 = builder.AddMongoDB("mongo3", port: 61689)
+    .WithArgs("--replSet", "rs0", "--bind_ip_all");
 
 var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
     .WithReference(userDatabase)
@@ -22,6 +26,8 @@ var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
 
 var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secretsapi")
     .WithReference(mongoDb)
+    .WithReference(mongoDb2)
+    .WithReference(mongoDb3)
     .WithReference(messaging);
 
 var loggerPostgres = builder.AddPostgres("logger-postgres");
@@ -37,16 +43,16 @@ var loggingFunction =
 var angular = builder.AddNpmApp("angular", "../SecretSharing.Angular")
     .WithReference(userApi)
     .WithReference(secretApi)
-    .WithHttpEndpoint(env: "PORT")
+    //.WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
 
 if (builder.Environment.IsDevelopment())
 {
-    // angular
-    //     .WithHttpEndpoint(env: "PORT", port: 4587);
-    //
-    // cache.WithDataVolume();
+    angular
+        .WithHttpEndpoint(env: "PORT", port: 4587);
+    
+    // mongoDb.WithDataVolume();
     // userPostgres.WithDataVolume();
     // loggerPostgres.WithDataVolume();
 }
