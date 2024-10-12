@@ -71,6 +71,7 @@ var config = JsonSerializer.Serialize(new {
     _id = "rs0",
     members = members.Select((x, i) => new { _id = i, host = x.ToString() })
 });
+
 database.RunCommand<BsonDocument>($"{{ replSetInitiate: {config}}}");
 
 app.Run();
