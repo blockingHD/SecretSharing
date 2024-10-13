@@ -9,14 +9,8 @@ var userPostgres = builder.AddPostgres("user-postgres");
 
 var userDatabase = userPostgres.AddDatabase("userdb");
 
-var mongoDb = builder.AddMongoDB("mongo", port: 61640)
-    .WithArgs("--replSet", "rs0", "--bind_ip_all");
+var mongoDb = builder.AddMongoDB("mongo", port: 61640);
 
-var mongoDb2 = builder.AddMongoDB("mongo2", port: 61673)
-    .WithArgs("--replSet", "rs0", "--bind_ip_all");
-
-var mongoDb3 = builder.AddMongoDB("mongo3", port: 61689)
-    .WithArgs("--replSet", "rs0", "--bind_ip_all");
 
 var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
     .WithReplicas(2)
@@ -28,8 +22,6 @@ var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
 var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secretsapi")
     .WithReplicas(2)
     .WithReference(mongoDb)
-    .WithReference(mongoDb2)
-    .WithReference(mongoDb3)
     .WithReference(messaging);
 
 var loggerPostgres = builder.AddPostgres("logger-postgres");
