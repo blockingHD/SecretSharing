@@ -26,7 +26,6 @@ var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
     .WithExternalHttpEndpoints();
 
 var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secretsapi")
-    .WithReplicas(2)
     .WithReference(mongoDb)
     .WithReference(mongoDb2)
     .WithReference(mongoDb3)
