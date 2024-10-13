@@ -19,12 +19,14 @@ var mongoDb3 = builder.AddMongoDB("mongo3", port: 61689)
     .WithArgs("--replSet", "rs0", "--bind_ip_all");
 
 var userApi = builder.AddProject<SecretSharing_User_API>("userapi")
+    .WithReplicas(2)
     .WithReference(userDatabase)
     .WithReference(userPostgres)
     .WithReference(messaging)
     .WithExternalHttpEndpoints();
 
 var secretApi = builder.AddProject<SecretSharing_Secrets_API>("secretsapi")
+    .WithReplicas(2)
     .WithReference(mongoDb)
     .WithReference(mongoDb2)
     .WithReference(mongoDb3)
