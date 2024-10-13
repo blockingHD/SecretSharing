@@ -5,6 +5,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using SecretSharing.Secrets.API.Endpoints;
 using SecretSharing.Secrets.API.Services;
+using SecretSharing.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 

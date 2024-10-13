@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using SecretSharing.ServiceDefaults;
 using SecretSharing.User.API;
 using SecretSharing.User.API.Endpoints;
 using SecretSharing.User.API.models;

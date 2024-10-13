@@ -1,4 +1,4 @@
-namespace Microsoft.Extensions.Hosting;
+namespace SecretSharing.ServiceDefaults;
 
 public interface IEventLogger
 {

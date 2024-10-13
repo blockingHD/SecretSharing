@@ -119,5 +119,7 @@ public static class Keys
 
 public record UserKeysRequest(string PublicKey, string EncryptedPrivateKey, string Salt, string Iv);
 
+// ReSharper disable InconsistentNaming
+// ReSharper disable NotAccessedPositionalProperty.Global
 public record UserKeysResponse(string userId, string PublicKey, string EncryptedPrivateKey, string Salt, string Iv);
 public record PublicUserKeysResponse(string userId, string PublicKey);

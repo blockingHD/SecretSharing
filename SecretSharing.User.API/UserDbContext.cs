@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using SecretSharing.User.API.models;
 
 namespace SecretSharing.User.API;
 

@@ -1,6 +1,5 @@
 using System.Text;
 using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SecretSharing.ServiceDefaults.Attribute;
@@ -12,7 +11,7 @@ public class Worker : BackgroundService
     private readonly IConnection _connection;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<Worker> _logger;
-    private IModel Channel { get; set; }
+    private IModel? Channel { get; set; }
 
     public Worker(IConnection connection, IServiceScopeFactory scopeFactory, ILogger<Worker> logger)
     {
@@ -31,7 +30,7 @@ public class Worker : BackgroundService
         Channel = _connection.CreateModel();
         var consumer = new EventingBasicConsumer(Channel);
 
-        consumer.Received += (sender, eventArgs) =>
+        consumer.Received += (_, eventArgs) =>
         {
             var body = eventArgs.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
@@ -49,7 +48,7 @@ public class Worker : BackgroundService
             dbContext.Logs.Add(new Log
             {
                 EventId = eventArgs.RoutingKey,
-                UserId = log.UserId,
+                UserId = log!.UserId,
                 Path = log.Path
             });
             

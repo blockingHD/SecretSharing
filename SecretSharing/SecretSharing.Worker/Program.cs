@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using SecretSharing.ServiceDefaults;
 using SecretSharing.Worker;
 
 var builder = Host.CreateApplicationBuilder(args);

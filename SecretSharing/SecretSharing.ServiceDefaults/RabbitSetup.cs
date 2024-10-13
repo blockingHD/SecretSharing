@@ -1,7 +1,8 @@
 using System.Text;
+using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 
-namespace Microsoft.Extensions.Hosting;
+namespace SecretSharing.ServiceDefaults;
 
 public class RabbitSetup : IEventLogger
 {
